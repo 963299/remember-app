@@ -1,0 +1,58 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$roomCode": {
+        ".read": "$roomCode.matches(/^[A-Z2-9]{5}$/)",
+        ".write": "$roomCode.matches(/^[A-Z2-9]{5}$/)",
+
+        "hostId": { ".validate": "newData.isString()" },
+        "createdAt": { ".validate": true },
+        "status": {
+          ".validate": "newData.isString() && newData.val().matches(/^(lobby|picking|reveal|answering|reviewing|scoreboard|finished)$/)"
+        },
+
+        "settings": {
+          "categories": { ".validate": "newData.hasChildren()" },
+          "timerMode": { ".validate": "newData.val() == 'none' || newData.val() == 'timed'" },
+          "timerSeconds": { ".validate": "newData.isNumber() && newData.val() >= 10 && newData.val() <= 600" },
+          "totalRounds": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 26" }
+        },
+
+        "players": {
+          "$playerId": {
+            ".validate": "$playerId.matches(/^p_[a-z0-9]{8}$/)",
+            "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 20" },
+            "color": { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" },
+            "colorVisible": { ".validate": "newData.isBoolean()" },
+            "score": { ".validate": "newData.isNumber()" },
+            "connected": { ".validate": "newData.isBoolean()" },
+            "joinedAt": { ".validate": true }
+          }
+        },
+
+        "round": {
+          "roundNumber": { ".validate": "newData.isNumber()" },
+          "turnOrder": { ".validate": "newData.hasChildren()" },
+          "currentTurnIndex": { ".validate": "newData.isNumber()" },
+          "sumSoFar": { ".validate": "newData.isNumber()" },
+          "letter": { ".validate": "newData.isNumber()" },
+          "timerEndsAt": { ".validate": true },
+          "stopCalledBy": { ".validate": true },
+          "forfeitedBy": { ".validate": "newData.isString()" },
+          "validation": { ".validate": true },
+          "roundScores": { ".validate": true },
+          "picks": {
+            "$playerId": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 26" }
+          },
+          "answers": {
+            "$playerId": {
+              "$category": { ".validate": "newData.isString() && newData.val().length <= 60" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

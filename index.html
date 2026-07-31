@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Remember</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0b0d16">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="rays-bg" aria-hidden="true"></div>
+<button id="btn-global-leave" class="global-leave hidden">Sair / nova sala</button>
+<button id="btn-forfeit" class="global-forfeit hidden">Abandonar partida</button>
+
+<!-- HOME -->
+<section id="screen-home" class="screen active">
+  <div class="crystal-logo">
+    <img src="icon-192.png" alt="">
+  </div>
+  <h1 class="brand">REMEMBER</h1>
+  <p class="tagline">a câmara das letras</p>
+
+  <div class="card stack">
+    <button id="btn-go-create" class="btn btn-primary">Criar sala</button>
+    <button id="btn-go-join" class="btn btn-secondary">Entrar em sala</button>
+  </div>
+  <p class="footnote" id="gemini-key-link">Configurar chave de IA (host)</p>
+</section>
+
+<!-- SETUP (nome + cor) -->
+<section id="screen-setup" class="screen">
+  <h2 class="section-title" id="setup-title">Seus dados</h2>
+  <div class="card stack">
+    <label class="field">
+      <span>Seu nome</span>
+      <input id="input-name" type="text" maxlength="18" placeholder="Ex: Reizinho">
+    </label>
+
+    <div class="field">
+      <span>Escolha sua cor</span>
+      <div id="color-grid" class="color-grid"></div>
+    </div>
+
+    <label class="toggle-row">
+      <span>Mostrar minha cor pros outros jogadores</span>
+      <input id="input-color-visible" type="checkbox" checked>
+    </label>
+
+    <label id="join-code-field" class="field hidden">
+      <span>Código da sala</span>
+      <input id="input-room-code" type="text" maxlength="5" placeholder="Ex: K7WQP" style="text-transform:uppercase">
+    </label>
+
+    <button id="btn-confirm-setup" class="btn btn-primary">Continuar</button>
+    <button class="btn btn-ghost" data-back="screen-home">Voltar</button>
+  </div>
+</section>
+
+<!-- LOBBY -->
+<section id="screen-lobby" class="screen">
+  <h2 class="section-title">Sala <span id="lobby-room-code" class="room-code-badge"></span></h2>
+  <div class="card">
+    <h3 class="card-subtitle">Jogadores</h3>
+    <ul id="lobby-players" class="player-list"></ul>
+  </div>
+
+  <div id="host-settings" class="card stack hidden">
+    <h3 class="card-subtitle">Configurações (host)</h3>
+    <label class="field">
+      <span>Categorias (separadas por vírgula)</span>
+      <input id="input-categories" type="text" value="País, Animal, Objeto, Nome, Fruta">
+    </label>
+    <label class="field">
+      <span>Número de rodadas</span>
+      <input id="input-total-rounds" type="number" min="1" max="26" value="5">
+    </label>
+    <label class="field">
+      <span>Cronômetro</span>
+      <select id="input-timer-mode">
+        <option value="none">Sem tempo (alguém aperta "Parar")</option>
+        <option value="timed">Tempo determinado</option>
+      </select>
+    </label>
+    <label id="timer-seconds-field" class="field hidden">
+      <span>Segundos por rodada</span>
+      <input id="input-timer-seconds" type="number" min="15" max="300" value="60">
+    </label>
+    <button id="btn-start-game" class="btn btn-primary">Iniciar partida</button>
+  </div>
+  <p id="lobby-waiting-msg" class="footnote hidden">Aguardando o host iniciar a partida...</p>
+</section>
+
+<!-- PICKING -->
+<section id="screen-picking" class="screen">
+  <h2 class="section-title">Sorteio da letra</h2>
+  <p class="picking-sum">Soma até agora: <strong id="picking-sum">0</strong> / 26</p>
+  <ul id="picking-order" class="picking-order"></ul>
+
+  <div id="picking-my-turn" class="card stack hidden">
+    <p>Sua vez! Escolha um número de <strong id="picking-min">1</strong> a <strong id="picking-max">26</strong>.</p>
+    <input id="input-pick-number" type="number" min="1" max="26">
+    <button id="btn-confirm-pick" class="btn btn-primary">Confirmar número</button>
+  </div>
+  <p id="picking-wait-msg" class="footnote hidden">Aguardando a vez de <strong id="picking-current-name"></strong>...</p>
+</section>
+
+<!-- LETTER REVEAL (overlay rápido) -->
+<section id="screen-reveal" class="screen">
+  <div class="reveal-burst" aria-hidden="true"></div>
+  <p class="reveal-label">A letra é</p>
+  <div id="reveal-letter" class="reveal-letter">A</div>
+</section>
+
+<!-- ANSWERING -->
+<section id="screen-answering" class="screen">
+  <div class="answering-header">
+    <div class="letter-chip" id="answering-letter">A</div>
+    <div id="timer-display" class="timer-display hidden">60s</div>
+  </div>
+  <div id="answer-fields" class="card stack"></div>
+  <button id="btn-submit-answers" class="btn btn-primary">Enviar respostas</button>
+  <button id="btn-call-stop" class="btn btn-danger hidden">PAROU!</button>
+  <p class="footnote" id="answering-status"></p>
+</section>
+
+<!-- REVIEWING -->
+<section id="screen-reviewing" class="screen">
+  <h2 class="section-title">Validando respostas...</h2>
+  <div class="spinner"></div>
+  <p class="footnote">A inteligência artificial está conferindo as respostas abertas.</p>
+</section>
+
+<!-- SCOREBOARD -->
+<section id="screen-scoreboard" class="screen">
+  <h2 class="section-title">Resultado da rodada — letra <span id="scoreboard-letter"></span></h2>
+  <div id="scoreboard-details" class="stack"></div>
+  <div class="card">
+    <h3 class="card-subtitle">Placar geral</h3>
+    <ul id="scoreboard-total" class="player-list"></ul>
+  </div>
+  <button id="btn-next-round" class="btn btn-primary hidden">Próxima rodada</button>
+  <p id="scoreboard-wait-msg" class="footnote hidden">Aguardando o host iniciar a próxima rodada...</p>
+</section>
+
+<!-- FIM DE JOGO -->
+<section id="screen-finished" class="screen">
+  <h2 class="section-title">Fim de jogo!</h2>
+  <p id="finished-banner" class="footnote hidden" style="color:var(--danger)"></p>
+  <div class="card">
+    <h3 class="card-subtitle">Ranking final</h3>
+    <ul id="finished-ranking" class="player-list"></ul>
+  </div>
+  <button id="btn-play-again" class="btn btn-primary hidden">Jogar novamente</button>
+  <button id="btn-leave-finished" class="btn btn-ghost">Sair da sala</button>
+</section>
+
+<!-- MODAL: chave Gemini -->
+
+<div id="modal-gemini" class="modal hidden">
+  <div class="modal-box stack">
+    <h3>Chave da IA (Gemini)</h3>
+    <p class="footnote">Usada só neste aparelho para validar respostas de categorias abertas (Animal, Objeto etc). Gere gratuitamente em aistudio.google.com/apikey.</p>
+    <input id="input-gemini-key" type="text" placeholder="Cole sua chave aqui">
+    <button id="btn-save-gemini-key" class="btn btn-primary">Salvar</button>
+    <button id="btn-close-gemini" class="btn btn-ghost">Fechar</button>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

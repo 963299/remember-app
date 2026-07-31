@@ -1,0 +1,18 @@
+{
+  "id": "/remember-app/",
+  "name": "Remember - o jogo das letras",
+  "short_name": "Remember",
+  "description": "Jogo de letras e categorias multiplayer em tempo real: crie uma sala, sorteie a letra e responda antes do tempo acabar.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0b12",
+  "theme_color": "#0b0d16",
+  "orientation": "portrait",
+  "categories": ["games", "entertainment"],
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

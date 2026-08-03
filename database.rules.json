@@ -1,0 +1,83 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "devices": {
+      "$deviceId": {
+        ".read": "$deviceId.matches(/^d_[a-z0-9]{12}$/)",
+        ".write": "$deviceId.matches(/^d_[a-z0-9]{12}$/)",
+        "gamesCreated": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && (!data.exists() ? newData.val() <= 1 : newData.val() == data.val() + 1)"
+        },
+        "unlocked": { ".validate": "newData.isBoolean()" },
+        "lastRedeemedCode": { ".validate": "newData.isString()" }
+      }
+    },
+
+    "unlock-codes": {
+      "$code": {
+        ".read": "$code.matches(/^[A-Z0-9]{6,10}$/)",
+        ".write": "$code.matches(/^[A-Z0-9]{6,10}$/) && data.exists() && data.child('used').val() == false && newData.child('used').val() == true",
+        "used": { ".validate": "newData.isBoolean()" },
+        "deviceId": { ".validate": "newData.isString()" }
+      }
+    },
+
+    "rooms": {
+      "$roomCode": {
+        ".read": "$roomCode.matches(/^[A-Z2-9]{5}$/)",
+        ".write": "$roomCode.matches(/^[A-Z2-9]{5}$/)",
+
+        "hostId": { ".validate": "newData.isString()" },
+        "createdAt": { ".validate": true },
+        "status": {
+          ".validate": "newData.isString() && newData.val().matches(/^(lobby|picking|reveal|answering|reviewing|scoreboard|finished)$/)"
+        },
+
+        "settings": {
+          "categories": { ".validate": "newData.hasChildren()" },
+          "categoryQueue": { ".validate": "newData.hasChildren()" },
+          "allowRepeat": { ".validate": "newData.isBoolean()" },
+          "timerMode": { ".validate": "newData.val() == 'none' || newData.val() == 'timed'" },
+          "timerSeconds": { ".validate": "newData.isNumber() && newData.val() >= 10 && newData.val() <= 600" },
+          "totalRounds": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 26" }
+        },
+
+        "players": {
+          "$playerId": {
+            ".validate": "$playerId.matches(/^p_[a-z0-9]{8}$/)",
+            "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 20" },
+            "color": { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" },
+            "colorVisible": { ".validate": "newData.isBoolean()" },
+            "photo": { ".validate": "newData.isString() && newData.val().length <= 250000" },
+            "score": { ".validate": "newData.isNumber()" },
+            "connected": { ".validate": "newData.isBoolean()" },
+            "joinedAt": { ".validate": true }
+          }
+        },
+
+        "round": {
+          "roundNumber": { ".validate": "newData.isNumber()" },
+          "category": { ".validate": "newData.isString()" },
+          "turnOrder": { ".validate": "newData.hasChildren()" },
+          "currentTurnIndex": { ".validate": "newData.isNumber()" },
+          "sumSoFar": { ".validate": "newData.isNumber()" },
+          "letter": { ".validate": "newData.isNumber()" },
+          "timerEndsAt": { ".validate": true },
+          "stopCalledBy": { ".validate": true },
+          "forfeitedBy": { ".validate": "newData.isString()" },
+          "validation": { ".validate": true },
+          "roundScores": { ".validate": true },
+          "picks": {
+            "$playerId": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 26" }
+          },
+          "answers": {
+            "$playerId": {
+              "$category": { ".validate": "newData.isString() && newData.val().length <= 60" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
